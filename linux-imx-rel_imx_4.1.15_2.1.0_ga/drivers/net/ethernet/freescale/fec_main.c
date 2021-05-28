@@ -3448,9 +3448,18 @@ fec_probe(struct platform_device *pdev)
 	struct device_node *np = pdev->dev.of_node, *phy_node;
 	int num_tx_qs;
 	int num_rx_qs;
+	/* 设置 MX6UL_PAD_ENET1_TX_CLK 和 MX6UL_PAD_ENET2_TX_CLK
+	 * 这两个 IO 的复用寄存器的 SION 位为 1。
+	 */
+	 void __iomem *IMX6U_ENET1_TX_CLK;
+ 	void __iomem *IMX6U_ENET2_TX_CLK;
+	IMX6U_ENET1_TX_CLK = ioremap(0X020E00DC, 4);
+	writel(0X14, IMX6U_ENET1_TX_CLK);
+	IMX6U_ENET2_TX_CLK = ioremap(0X020E00FC, 4);
+	writel(0X14, IMX6U_ENET2_TX_CLK);
 
 	fec_enet_get_queue_num(pdev, &num_tx_qs, &num_rx_qs);
-
+	
 	/* Init network device */
 	ndev = alloc_etherdev_mqs(sizeof(struct fec_enet_private),
 				  num_tx_qs, num_rx_qs);
