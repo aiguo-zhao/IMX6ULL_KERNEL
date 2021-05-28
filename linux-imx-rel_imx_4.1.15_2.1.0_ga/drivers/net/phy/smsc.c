@@ -81,7 +81,7 @@ static int smsc_phy_reset(struct phy_device *phydev)
 	msec = 1;
 		phy_reset = of_get_named_gpio(np, "phy-reset-gpios", 0);
 		if (!gpio_is_valid(phy_reset))
-			return;
+			return 0;
 	gpio_direction_output(phy_reset, 0);
 	gpio_set_value(phy_reset, 0);
 	msleep(msec);
@@ -99,7 +99,7 @@ static int smsc_phy_reset(struct phy_device *phydev)
 		/* set "all capable" mode and reset the phy */
 		rc |= MII_LAN83C185_MODE_ALL;
 		phy_write(phydev, MII_LAN83C185_SPECIAL_MODES, rc);
-}
+	}
 		phy_write(phydev, MII_BMCR, BMCR_RESET);
 
 		/* wait end of reset (max 500 ms) */
@@ -109,7 +109,7 @@ static int smsc_phy_reset(struct phy_device *phydev)
 				return -1;
 			rc = phy_read(phydev, MII_BMCR);
 		} while (rc & BMCR_RESET);
-	}
+	
 	return 0;
 }
 
